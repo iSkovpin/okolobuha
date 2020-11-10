@@ -1,5 +1,5 @@
 .idea/
-.clasp.json
-configDev.js
-configProd.js
-appsscript.json
+src/.clasp.json
+src/configDev.js
+src/configProd.js
+src/appsscript.json
