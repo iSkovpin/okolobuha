@@ -12,8 +12,8 @@ function addRecord() {
   srcRow.copyTo(destRow);
   
   var date = Utilities.formatDate(new Date(), "GMT+7", "dd.MM.yyyy");
-  var deteCell = getDateCell(destRowNum);
-  deteCell.setValue(date);
+  var dateCell = getDateCell(destRowNum);
+  dateCell.setValue(date);
   
   var sumCell = getSumCell(destRowNum);
   sumCell.activate().setValue("");
