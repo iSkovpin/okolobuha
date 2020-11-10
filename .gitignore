@@ -3,3 +3,4 @@ src/.clasp.json
 src/configDev.js
 src/configProd.js
 src/appsscript.json
+node_modules/
