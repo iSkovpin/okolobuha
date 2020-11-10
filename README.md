@@ -1,3 +1,7 @@
 [![clasp](https://img.shields.io/badge/built%20with-clasp-4285f4.svg)](https://github.com/google/clasp)
 
-Simple [Apps Script](https://developers.google.com/apps-script/) for home accounting.
+# Okolobuha
+
+An [Apps Script](https://developers.google.com/apps-script/) for home accounting.
+
+Works with Google Sheets notifies about new changes using telegram bot.
