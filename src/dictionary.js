@@ -37,6 +37,7 @@ class Dictionary {
     /**
      * @param noun {string}
      * @param nounCase {string}
+     * @return {string}
      */
     getNoun(noun, nounCase) {
         if (nounCase === undefined) {
@@ -71,6 +72,7 @@ class Dictionary {
 
     /**
      * @param noun {string}
+     * @return {string}
      */
     getNounGender(noun) {
         if (this.nouns[noun] === undefined) {
