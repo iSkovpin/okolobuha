@@ -118,6 +118,10 @@ class Verb {
     }
 }
 
+/**
+ * Dictionary initialization.
+ * @type {Dictionary}
+ */
 let dict = new Dictionary();
 dict.addNoun(new Noun('Иван', 'Ивана', 'Ивану', 'Ивана', 'Иваном', 'об Иване', VerbCase.MALE));
 dict.addNoun(new Noun('Арсения', 'Арсении', 'Арсении', 'Арсению', 'Арсенией', 'об Арсении', VerbCase.FEMALE));
