@@ -14,7 +14,7 @@ function logNewRecord(e) {
   var sum = getSumCell(row).getValue().toFixed(2);
   var info = getInfoCell(row).getValue();
 
-  var msg = who + " добавил(а) новую запись: " + sum + " руб. за \"" + info + "\"";
+  var msg = who + " " + dict.getVerb('добавить', dict.getNounGender(who)) + " новую запись: " + sum + " руб. за \"" + info + "\"";
   Logger.log(msg);
   tgBotSendMessage(msg);  
 }
@@ -42,7 +42,7 @@ function logPayment(e) {
     return;
   }
   
-  var msg = fromWho + " заплатил(а) " + howMuch + " руб. для " + who + " за \"" + info + "\"";
+  var msg = fromWho + " " + dict.getVerb('заплатить', dict.getNounGender(fromWho)) + " " + howMuch + " руб. " + dict.getNoun(who, NounCase.DAT)  + " за \"" + info + "\"";
   Logger.log(msg);
   tgBotSendMessage(msg);    
 }
