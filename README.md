@@ -4,4 +4,4 @@
 
 An [Apps Script](https://developers.google.com/apps-script/) for home accounting.
 
-Works with Google Sheets notifies about new changes using telegram bot.
+Works with Google Sheets and notifies about new changes using telegram bot.
