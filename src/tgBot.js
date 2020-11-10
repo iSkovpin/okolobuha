@@ -13,7 +13,7 @@ function tgBotSendMessage(msg) {
     'payload' : JSON.stringify(data)
   };
 
-  var response = UrlFetchApp.fetch(url, options);
+  UrlFetchApp.fetch(url, options);
   tgBotSetLastCallTime();
 }
 
