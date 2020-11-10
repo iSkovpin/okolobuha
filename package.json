@@ -1,5 +1,5 @@
 {
-  "name": "google-apps-script-typ-hinting",
+  "name": "google-apps-script-type-hinting",
   "description": "Type-hinting fo Google Apps Script development in IntelliJ IDEA",
   "author": {
     "name": "Ivan Skovpin",
