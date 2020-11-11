@@ -4,7 +4,8 @@ function tgBotSendMessage(msg) {
   var data = {
     "chat_id": getConfig("tgBotChannelId"),
     "text": msg,
-    "disable_notification": tgBotGetTimeAfterLastCall() < getConfig("tgBotSilentBuffer")
+    "disable_notification": tgBotGetTimeAfterLastCall() < getConfig("tgBotSilentBuffer"),
+    "parse_mode": "HTML"
   };
   
   var options = {

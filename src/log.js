@@ -1,8 +1,14 @@
+/**
+ * @param {GoogleAppsScript.Events.SheetsOnEdit} e
+ */
 function logEvent(e) {
   logPayment(e);
   logNewRecord(e);
 }
 
+/**
+ * @param {GoogleAppsScript.Events.SheetsOnEdit} e
+ */
 function logNewRecord(e) {
   var range = e.range;
   if (!isInfoCell(range) || e.oldValue != undefined) {
@@ -14,11 +20,16 @@ function logNewRecord(e) {
   var sum = getSumCell(row).getValue().toFixed(2);
   var info = getInfoCell(row).getValue();
 
-  var msg = who + " " + dict.getVerb('добавить', dict.getNounGender(who)) + " новую запись: " + sum + " руб. за \"" + info + "\"";
+  let infoLink = '<a href="' + getCellUrl(range, e.source, e.source.getActiveSheet()) + '">' + info + '</a>';
+  var msg = who + " " + dict.getVerb('добавить', dict.getNounGender(who)) + " новую запись: " + sum + " руб. за " + infoLink;
+
   Logger.log(msg);
   tgBotSendMessage(msg);  
 }
 
+/**
+ * @param {GoogleAppsScript.Events.SheetsOnEdit} e
+ */
 function logPayment(e) {
   if (!isCheckPaymentCell(e.range)) {
     return;
@@ -41,8 +52,10 @@ function logPayment(e) {
   if (!resultCell.getValue() || !partCell.getValue() || who == fromWho) {
     return;
   }
-  
-  var msg = fromWho + " " + dict.getVerb('заплатить', dict.getNounGender(fromWho)) + " " + howMuch + " руб. " + dict.getNoun(who, NounCase.DAT)  + " за \"" + info + "\"";
+
+  let infoLink = '<a href="' + getCellUrl(getInfoCell(row), e.source, e.source.getActiveSheet()) + '">' + info + '</a>';
+  var msg = fromWho + " " + dict.getVerb('заплатить', dict.getNounGender(fromWho)) + " " + howMuch + " руб. " + dict.getNoun(who, NounCase.DAT)  + " за " + infoLink;
+
   Logger.log(msg);
   tgBotSendMessage(msg);    
 }
