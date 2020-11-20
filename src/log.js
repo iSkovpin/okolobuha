@@ -11,14 +11,18 @@ function logEvent(e) {
  */
 function logNewRecord(e) {
   var range = e.range;
-  if (!isInfoCell(range) || e.oldValue != undefined) {
+  if (!isInfoCell(range) || e.oldValue !== undefined) {
     return;
   }
   
-  var row = parseInt(range.getRow());
-  var who = getWhoCell(row).getValue(); 
+  var row = range.getRow();
+  var who = getWhoCell(row).getValue();
   var sum = getSumCell(row).getValue().toFixed(2);
   var info = getInfoCell(row).getValue();
+
+  if (!who) {
+    who = 'Кто-то';
+  }
 
   let infoLink = '<a href="' + getCellUrl(range, e.source, e.source.getActiveSheet()) + '">' + info + '</a>';
   var msg = who + " " + dict.getVerb('добавить', dict.getNounGender(who)) + " новую запись: " + sum + " руб. за " + infoLink;
@@ -49,7 +53,7 @@ function logPayment(e) {
   var fromWho = sheet.getRange(2, col - 1, 1).getValue();
   var howMuch = partCell.getValue().toFixed(2);
   
-  if (!resultCell.getValue() || !partCell.getValue() || who == fromWho) {
+  if (!resultCell.getValue() || !partCell.getValue() || who === fromWho) {
     return;
   }
 
