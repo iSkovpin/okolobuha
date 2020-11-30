@@ -10,8 +10,10 @@ function logEvent(e) {
  * @param {GoogleAppsScript.Events.SheetsOnEdit} e
  */
 function logNewRecord(e) {
-  var range = e.range;
-  if (!isInfoCell(range) || e.oldValue !== undefined) {
+  let range = e.range;
+  let sheetInfo = new ExpensesSheetInfo();
+
+  if (!sheetInfo.isInfoCell(range) || e.oldValue !== undefined) {
     return;
   }
   
@@ -35,7 +37,8 @@ function logNewRecord(e) {
  * @param {GoogleAppsScript.Events.SheetsOnEdit} e
  */
 function logPayment(e) {
-  if (!isCheckPaymentCell(e.range)) {
+  let sheetInfo = new ExpensesSheetInfo();
+  if (!sheetInfo.isCheckPaymentCell(e.range)) {
     return;
   }
   
@@ -43,8 +46,8 @@ function logPayment(e) {
   var sheet = ss.getActiveSheet();
 
   var range = e.range;
-  var col = parseInt(range.getColumn());
-  var row = parseInt(range.getRow());
+  var col = range.getColumn();
+  var row = range.getRow();
   
   var resultCell = sheet.getRange(row, col, 1);
   var partCell = sheet.getRange(row, col - 1, 1);  
