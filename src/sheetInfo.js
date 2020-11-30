@@ -76,7 +76,7 @@ class DebtsSheetInfo extends SheetInfo {
  */
 class ExpensesSheetInfo extends SheetInfo {
     constructor() {
-        let sheetNameConfigVar =      'expensesSheetName';
+        let sheetNameConfigVar = 'expensesSheetName';
         super(sheetNameConfigVar);
 
         this.paymentColumns = [6, 8, 10, 12];
