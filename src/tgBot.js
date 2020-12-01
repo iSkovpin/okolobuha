@@ -1,10 +1,10 @@
 function tgBotSendMessage(msg) {
-    var url = "https://api.telegram.org/bot" + getConfig("tgBotToken") + "/sendMessage";
+    var url = "https://api.telegram.org/bot" + config.get("tgBotToken") + "/sendMessage";
 
     var data = {
-        "chat_id": getConfig("tgBotChannelId"),
+        "chat_id": config.get("tgBotChannelId"),
         "text": msg,
-        "disable_notification": tgBotGetTimeAfterLastCall() < getConfig("tgBotSilentBuffer"),
+        "disable_notification": tgBotGetTimeAfterLastCall() < config.get("tgBotSilentBuffer"),
         "parse_mode": "HTML"
     };
 
