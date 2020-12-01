@@ -3,15 +3,22 @@
  */
 class SheetInfo {
     /**
-     * @param {string} sheetNameConfigVar
+     * @param {string} sheetConfigVar
      */
-    constructor(sheetNameConfigVar) {
-        this.sheetNameConfigVar = sheetNameConfigVar;
+    constructor(sheetConfigVar) {
+        this.sheetNameConfigVar = sheetConfigVar;
         if (this.sheetNameConfigVar === undefined) {
-            throw 'sheetNameConfigVar is not defined';
+            throw 'sheetConfigVar is not defined';
         }
 
-        this.sheetName = getConfig(sheetNameConfigVar);
+        this.config = config.get(sheetConfigVar);
+    }
+
+    /**
+     * @return {GoogleAppsScript.Spreadsheet.Sheet}
+     */
+    getSheet() {
+        return SpreadsheetApp.getActiveSpreadsheet().getSheetByName(this.config.name);
     }
 
     /**
@@ -19,7 +26,7 @@ class SheetInfo {
      * @return {boolean}
      */
     isCorrectSheet(sheet) {
-        return sheet.getName() === this.sheetName;
+        return sheet.getName() === this.config.name;
     }
 
     /**
@@ -32,7 +39,7 @@ class SheetInfo {
 
     /**
      * @param {GoogleAppsScript.Spreadsheet.Range} range
-     * @param {int[]} columns
+     * @param {number[]} columns
      * @return {boolean}
      */
     isCellColumnIn(range, columns) {
@@ -41,7 +48,7 @@ class SheetInfo {
 
     /**
      * @param {GoogleAppsScript.Spreadsheet.Range} range
-     * @param {int[]} rows
+     * @param {number[]} rows
      * @return {boolean}
      */
     isCellRowIn(range, rows) {
@@ -54,11 +61,13 @@ class SheetInfo {
  */
 class DebtsSheetInfo extends SheetInfo {
     constructor() {
-        const sheetNameConfigVar = 'debtsSheetName';
-        super(sheetNameConfigVar);
+        const sheetConfigVar = 'sheets.debts';
+        super(sheetConfigVar);
 
-        this.sumDebtRows = [17, 18, 19, 20];
-        this.sumDebtColumns = [2, 3, 4, 5];
+        this.sumDebtRows = this.config.rows.sumDebt;
+        this.sumDebtColumns = this.config.columns.sumDebt;
+        this.sumDebtPayersColumn = this.config.columns.sumDebtPayers;
+        this.sumDebtDebtorsRow = this.config.rows.sumDebtDebtors;
     }
 
     /**
@@ -69,6 +78,30 @@ class DebtsSheetInfo extends SheetInfo {
             && this.isCellRowIn(range, this.sumDebtRows)
             && this.isCellColumnIn(range, this.sumDebtColumns);
     }
+
+    /**
+     * @param {GoogleAppsScript.Spreadsheet.Range} range
+     */
+    getSumDebtPayerCell(range) {
+        if (this.isSumDebtCell(range) === false) {
+            throw range.getA1Notation() + ' is not a sum debt cell';
+        }
+
+        let sheet = this.getSheet();
+        return sheet.getRange(range.getRow(), this.sumDebtPayersColumn);
+    }
+
+    /**
+     * @param {GoogleAppsScript.Spreadsheet.Range} range
+     */
+    getSumDebtDebtorCell(range) {
+        if (this.isSumDebtCell(range) === false) {
+            throw range.getA1Notation() + ' is not a sum debt cell';
+        }
+
+        let sheet = this.getSheet();
+        return sheet.getRange(this.sumDebtDebtorsRow, range.getColumn());
+    }
 }
 
 /**
@@ -76,18 +109,48 @@ class DebtsSheetInfo extends SheetInfo {
  */
 class ExpensesSheetInfo extends SheetInfo {
     constructor() {
-        let sheetNameConfigVar = 'expensesSheetName';
+        let sheetNameConfigVar = 'sheets.expenses';
         super(sheetNameConfigVar);
 
-        this.paymentColumns = [6, 8, 10, 12];
-        this.checkPaymentColumns = [7, 9, 11, 13];
-        this.firstDataRow = 4;
-        this.sampleDataRow = 3;
-        this.columnDate = 1;
-        this.columnExpenseSum = 2;
-        this.columnDebt = 3;
-        this.columnPayer = 4;
-        this.columnInfo = 5;
+        this.debtorsColumns = [];
+        this.config.debtors.forEach(debtorColumns => this.debtorsColumns.push[debtorColumns]);
+
+        this.tableHeaderRow = this.config.rows.tableHeader;
+        this.firstDataRow = this.config.rows.sampleData;
+        this.sampleDataRow = this.config.rows.firstData;
+
+        this.columnDate = this.config.columns.date;
+        this.columnExpenseSum = this.config.columns.sum;
+        this.columnDebt = this.config.columns.sumDebt;
+        this.columnPayer = this.config.columns.payer;
+        this.columnInfo = this.config.columns.info;
+    }
+
+    /**
+     * @return {number[]}
+     */
+    getDebtColumns() {
+        let result = [];
+        this.debtorsColumns.forEach(debtorColumns => result.push(debtorColumns.sum));
+        return result;
+    }
+
+    /**
+     * @return {number[]}
+     */
+    getCheckDebtColumns() {
+        let result = [];
+        this.debtorsColumns.forEach(debtorColumns => result.push(debtorColumns.check));
+        return result;
+    }
+
+    /**
+     * @return {number[]}
+     */
+    getParticipantColumns() {
+        let result = [];
+        this.debtorsColumns.forEach(debtorColumns => result.push(debtorColumns.participant));
+        return result;
     }
 
     /**
@@ -129,7 +192,7 @@ class ExpensesSheetInfo extends SheetInfo {
      * @param {GoogleAppsScript.Spreadsheet.Range} range
      * @return {boolean}
      */
-    isDebtCell(range) {
+    isSumDebtCell(range) {
         return this.isDataCell(range)
             && range.getColumn() === this.columnDebt;
     }
@@ -138,7 +201,7 @@ class ExpensesSheetInfo extends SheetInfo {
      * @param {GoogleAppsScript.Spreadsheet.Range} range
      * @return {boolean}
      */
-    isWhoCell(range) {
+    isPayerCell(range) {
         return this.isDataCell(range)
             && range.getColumn() === this.columnPayer;
     }
@@ -156,17 +219,77 @@ class ExpensesSheetInfo extends SheetInfo {
      * @param {GoogleAppsScript.Spreadsheet.Range} range
      * @return {boolean}
      */
-    isCheckPaymentCell(range) {
+    isCheckDebtCell(range) {
         return this.isDataCell(range)
-            && this.isCellColumnIn(range, this.checkPaymentColumns);
+            && this.isCellColumnIn(range, this.getCheckDebtColumns());
     }
 
     /**
      * @param {GoogleAppsScript.Spreadsheet.Range} range
      * @return {boolean}
      */
-    isPaymentCell(range) {
+    isDebtCell(range) {
         return this.isDataCell(range)
-            && this.isCellColumnIn(range, this.paymentColumns);
+            && this.isCellColumnIn(range, this.getDebtColumns());
+    }
+
+    /**
+     * @param {GoogleAppsScript.Spreadsheet.Range} range
+     * @return {string}
+     */
+    getDebtorNameByCell(range) {
+        if (this.isDataCell(range)) {
+            throw range.getA1Notation() + ' is not a data cell';
+        }
+
+        let column = range.getColumn();
+        for (let i = 0; i < this.debtorsColumns.length; i++) {
+            for (let key in this.debtorsColumns[i]) {
+                if (this.debtorsColumns[i][key] === column) {
+                    return this.debtorsColumns[i].name;
+                }
+            }
+        }
+
+        throw 'Debtor name for a cell ' + range.getA1Notation() + ' not found';
+    }
+
+    /**
+     * @param {string} debtorName
+     * @return {number}
+     */
+    getDebtorColumnByName(debtorName) {
+        return this.getDebtorColumnsByName(debtorName).name;
+    }
+
+    /**
+     * @param {string} debtorName
+     * @return {number}
+     */
+    getCheckDebtColumnByName(debtorName) {
+        return this.getDebtorColumnsByName(debtorName).check;
+    }
+
+    /**
+     * @param {string} debtorName
+     * @return {number}
+     */
+    getParticipantColumnByName(debtorName) {
+        return this.getDebtorColumnsByName(debtorName).participant;
+    }
+
+    /**
+     * @param {string} debtorName
+     * @return {Object}
+     */
+    getDebtorColumnsByName(debtorName) {
+        for (let i = 0; i < this.debtorsColumns.length; i++) {
+            let range = this.getSheet().getRange(this.tableHeaderRow, this.debtorsColumns[i].name);
+            if (range.getValue() === debtorName) {
+                return this.debtorsColumns[i];
+            }
+        }
+
+        throw debtorName + ' debtor not found';
     }
 }
