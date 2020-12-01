@@ -1,19 +1,30 @@
-function isDev() {
-    var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
-    return sheet.getName().indexOf('dev') != -1;
-}
-
-function getConfig(prop) {
-    if (isDev()) {
-        return getConfigDev(prop);
+/**
+ * Global config storage
+ */
+class Config {
+    constructor(source) {
+        this.source = source;
     }
-    return getConfigProd(prop);
-}
 
-function getConfigProd(prop) {
-    return configProd[prop];
-}
+    /**
+     * @param {string} name - dot separated
+     * @return {any}
+     */
+    get(name) {
+        let parts = name.split('.');
+        let result = this.source[parts[0]];
 
-function getConfigDev(prop) {
-    return configDev[prop];
+        for (let i = 1; i < parts.length; i++) {
+            if (result === undefined) {
+                break;
+            }
+            result = result[parts[i]];
+        }
+
+        if (result === undefined) {
+            throw 'Config variable "' + name + '" is not defined';
+        }
+
+        return result;
+    }
 }
