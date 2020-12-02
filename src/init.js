@@ -1,3 +1,18 @@
-String.prototype.capitalize = function () {
-    return this.charAt(0).toUpperCase() + this.slice(1);
+
+
+if (isDev()) {
+    Logger.log('DEV MODE');
 }
+
+
+
+/**
+ * Config initialization.
+ */
+if (isDev()) {
+    configSource = configDev;
+} else {
+    configSource = configProd;
+}
+
+let config = new Config(configSource);

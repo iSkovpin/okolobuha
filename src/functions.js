@@ -1,4 +1,12 @@
 /**
+ * @return {boolean}
+ */
+function isDev() {
+    let sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+    return sheet.getName().indexOf('dev') !== -1;
+}
+
+/**
  * @param {Object} object
  * @return {number|undefined}
  */
@@ -57,4 +65,11 @@ function getCellUrl(range, ss, sheet) {
     }
 
     return ss.getUrl() + '#gid=' + sheet.getSheetId() + "&range=" + range.getA1Notation();
+}
+
+/**
+ * @return {string}
+ */
+String.prototype.capitalize = function () {
+    return this.charAt(0).toUpperCase() + this.slice(1);
 }
