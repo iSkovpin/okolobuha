@@ -113,11 +113,11 @@ class ExpensesSheetInfo extends SheetInfo {
         super(sheetNameConfigVar);
 
         this.debtorsColumns = [];
-        this.config.debtors.forEach(debtorColumns => this.debtorsColumns.push[debtorColumns]);
+        this.config.columns.debtors.forEach(debtorColumns => this.debtorsColumns.push(debtorColumns));
 
         this.tableHeaderRow = this.config.rows.tableHeader;
-        this.firstDataRow = this.config.rows.sampleData;
-        this.sampleDataRow = this.config.rows.firstData;
+        this.sampleDataRow = this.config.rows.sampleData;
+        this.firstDataRow = this.config.rows.firstData;
 
         this.columnDate = this.config.columns.date;
         this.columnExpenseSum = this.config.columns.sum;
@@ -238,7 +238,7 @@ class ExpensesSheetInfo extends SheetInfo {
      * @return {string}
      */
     getDebtorNameByCell(range) {
-        if (this.isDataCell(range)) {
+        if (this.isDataCell(range) === false) {
             throw range.getA1Notation() + ' is not a data cell';
         }
 
@@ -246,7 +246,7 @@ class ExpensesSheetInfo extends SheetInfo {
         for (let i = 0; i < this.debtorsColumns.length; i++) {
             for (let key in this.debtorsColumns[i]) {
                 if (this.debtorsColumns[i][key] === column) {
-                    return this.debtorsColumns[i].name;
+                    return this.getSheet().getRange(this.tableHeaderRow, this.debtorsColumns[i].name).getValue();
                 }
             }
         }
@@ -290,6 +290,6 @@ class ExpensesSheetInfo extends SheetInfo {
             }
         }
 
-        throw debtorName + ' debtor not found';
+        throw 'Debtor '+ debtorName + ' not found';
     }
 }
