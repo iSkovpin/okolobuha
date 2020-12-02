@@ -17,17 +17,15 @@ function logNewRecord(e) {
         return;
     }
 
-    var row = range.getRow();
-    var who = getWhoCell(row).getValue();
-    var sum = getSumCell(row).getValue().toFixed(2);
-    var info = getInfoCell(row).getValue();
+    let record = new ExpenseRecord(range.getRow(), sheetInfo);
+    let payer = record.getPayer();
 
-    if (!who) {
-        who = dict.getNoun('кто-то', NounCase.IM);
+    if (!payer) {
+        payer = dict.getNoun('кто-то', NounCase.IM);
     }
 
-    let infoLink = '<a href="' + getCellUrl(range, e.source, e.source.getActiveSheet()) + '">' + info + '</a>';
-    let msg = who + " " + dict.getVerb('добавить', dict.getNounGender(who)) + " новую запись: " + sum + " руб. за " + infoLink;
+    let infoLink = '<a href="' + getCellUrl(range, e.source, e.source.getActiveSheet()) + '">' + record.getInfo() + '</a>';
+    let msg = payer + " " + dict.getVerb('добавить', dict.getNounGender(payer)) + " новую запись: " + record.getSum().toFixed(2) + " руб. за " + infoLink;
     msg = msg.capitalize();
 
     Logger.log(msg);
@@ -38,31 +36,22 @@ function logNewRecord(e) {
  * @param {GoogleAppsScript.Events.SheetsOnEdit} e
  */
 function logPayment(e) {
+    let range = e.range;
     let sheetInfo = new ExpensesSheetInfo();
-    if (!sheetInfo.isCheckPaymentCell(e.range)) {
+    if (!sheetInfo.isCheckDebtCell(range)) {
         return;
     }
 
-    var ss = SpreadsheetApp.getActiveSpreadsheet();
-    var sheet = ss.getActiveSheet();
+    let record = new ExpenseRecord(range.getRow(), sheetInfo);
+    let debtor = sheetInfo.getDebtorNameByCell(range);
+    let debtRecord = record.getDebtRecordByName(debtor);
 
-    var range = e.range;
-    var col = range.getColumn();
-    var row = range.getRow();
-
-    var resultCell = sheet.getRange(row, col, 1);
-    var partCell = sheet.getRange(row, col - 1, 1);
-    var who = getWhoCell(row).getValue();
-    var info = getInfoCell(row).getValue();
-    var fromWho = sheet.getRange(2, col - 1, 1).getValue();
-    var howMuch = partCell.getValue().toFixed(2);
-
-    if (!resultCell.getValue() || !partCell.getValue() || who === fromWho) {
+    if (!debtRecord.getCheck() || !debtRecord.getSum() || record.getPayer() === debtRecord.getName()) {
         return;
     }
 
-    let infoLink = '<a href="' + getCellUrl(getInfoCell(row), e.source, e.source.getActiveSheet()) + '">' + info + '</a>';
-    var msg = fromWho + " " + dict.getVerb('заплатить', dict.getNounGender(fromWho)) + " " + howMuch + " руб. " + dict.getNoun(who, NounCase.DAT) + " за " + infoLink;
+    let infoLink = '<a href="' + getCellUrl(record.infoCell, e.source, e.source.getActiveSheet()) + '">' + record.getInfo() + '</a>';
+    let msg = debtRecord.getName() + " " + dict.getVerb('заплатить', dict.getNounGender(debtRecord.getName())) + " " + debtRecord.getSum().toFixed(2) + " руб. " + dict.getNoun(record.getPayer(), NounCase.DAT) + " за " + infoLink;
     msg = msg.capitalize();
 
     Logger.log(msg);
