@@ -2,6 +2,9 @@
  * Global config storage
  */
 class Config {
+    /**
+     * @param {Object} source
+     */
     constructor(source) {
         this.source = source;
     }

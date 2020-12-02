@@ -1,18 +1,8 @@
-
-
 if (isDev()) {
     Logger.log('DEV MODE');
 }
 
-
-
 /**
  * Config initialization.
  */
-if (isDev()) {
-    configSource = configDev;
-} else {
-    configSource = configProd;
-}
-
-let config = new Config(configSource);
+let config = new Config(isDev() ? configDev : configProd);
