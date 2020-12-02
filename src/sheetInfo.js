@@ -54,6 +54,34 @@ class SheetInfo {
     isCellRowIn(range, rows) {
         return rows.indexOf(range.getRow()) !== -1
     }
+
+    /**
+     * @return {number|undefined}
+     */
+    getFirstConfigurableColumn() {
+        return getObjectMinRecursive(this.config.columns);
+    }
+
+    /**
+     * @return {number|undefined}
+     */
+    getLastConfigurableColumn() {
+        return getObjectMaxRecursive(this.config.columns);
+    }
+
+    /**
+     * @return {number|undefined}
+     */
+    getFirstConfigurableRow() {
+        return getObjectMinRecursive(this.config.rows);
+    }
+
+    /**
+     * @return {number|undefined}
+     */
+    getLastConfigurableRow() {
+        return getObjectMaxRecursive(this.config.rows);
+    }
 }
 
 /**
