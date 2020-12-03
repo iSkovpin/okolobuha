@@ -79,7 +79,7 @@ function payDebt() {
         }
     }
 
-    let resultMsg = "Долг " + dict.getNoun(debtor, NounCase.ROD) + ' ' + dict.getNoun(payer, NounCase.DAT) + " в размере " + debtSum.toFixed(2) + " руб. погашен с учётом взаимного перерасчёта.\n\nДолги:\n";
+    let resultMsg = "Долг " + dict.getNoun(debtor, NounCase.ROD) + ' ' + dict.getNoun(payer, NounCase.DAT) + " в размере " + debtSum.toFixed(2) + " руб. погашен с учётом взаимного перерасчёта.\n\nПозиции:\n";
     debtMessages.forEach(msg => resultMsg += msg + "\n");
 
     if (recalcMessages.length > 0) {
