@@ -29,7 +29,8 @@ function logNewRecord(e) {
     msg = msg.capitalize();
 
     Logger.log(msg);
-    tgBotSendMessage(msg);
+    let tgBot = new TelegramBot();
+    tgBot.sendMessage(msg);
 }
 
 /**
@@ -55,5 +56,6 @@ function logPayment(e) {
     msg = msg.capitalize();
 
     Logger.log(msg);
-    tgBotSendMessage(msg);
+    let tgBot = new TelegramBot();
+    tgBot.sendMessage(msg);
 }

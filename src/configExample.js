@@ -1,9 +1,12 @@
 const configExample = {
     timezone: 'GMT+7',
     dateFormat: 'dd.MM.yyyy',
-    tgBotToken: "<token>",
-    tgBotChannelId: -123456789,
-    tgBotSilentBuffer: 600,
+    telegramBot: {
+        token: '<token>',
+        channelId: -123456789,
+        silentBuffer: 600, // seconds
+        lastCallTimePropName: 'TG_BOT_LAST_CALL_TIME',
+    },
     sheets: {
         expenses: {
             name: 'Expenses',

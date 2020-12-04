@@ -31,7 +31,7 @@ function payDebt() {
     let confirm = ui.alert(
         'Перепроверь!',
         'Погасить долг ' + dict.getNoun(debtor, NounCase.ROD) + ' ' + dict.getNoun(payer, NounCase.DAT) + ' в размере '
-        + debtSum.toFixed(2) + ' руб.?' + "\n\n"
+        + debtSum.toFixed(2) + ' руб.?' + "\n"
         + 'Примечание: работа скрипта займёт некоторое время, не закрывайте таблицу сразу.',
         ui.ButtonSet.YES_NO
     );
@@ -89,7 +89,8 @@ function payDebt() {
 
     Logger.log(resultMsg);
     Logger.log('Rows processed: ' + (row - expensesSheetInfo.firstDataRow + 1));
-    tgBotSendMessage(resultMsg);
+    let tgBot = new TelegramBot();
+    tgBot.sendMessage(resultMsg);
 
     ui.alert(resultMsg);
 }

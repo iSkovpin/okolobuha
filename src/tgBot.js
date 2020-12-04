@@ -1,43 +1,79 @@
-function tgBotSendMessage(msg) {
-    var url = "https://api.telegram.org/bot" + config.get("tgBotToken") + "/sendMessage";
-
-    var data = {
-        "chat_id": config.get("tgBotChannelId"),
-        "text": msg,
-        "disable_notification": tgBotGetTimeAfterLastCall() < config.get("tgBotSilentBuffer"),
-        "parse_mode": "HTML"
-    };
-
-    var options = {
-        "method": "post",
-        'contentType': 'application/json',
-        'payload': JSON.stringify(data)
-    };
-
-    UrlFetchApp.fetch(url, options);
-    tgBotSetLastCallTime();
-}
-
-function tgBotGetTimeAfterLastCall() {
-    return Date.now() / 1000 - tgBotGetLastCallTime();
-}
-
-function tgBotGetLastCallTime() {
-    var scriptProperties = PropertiesService.getScriptProperties();
-    var timestamp = scriptProperties.getProperty('TG_BOT_LAST_CALL_TIME');
-
-    if (timestamp === undefined) {
-        timestamp = 0;
+class TelegramBot {
+    constructor() {
+        let conf = config.get('telegramBot');
+        this.token = conf.token;
+        this.channelId = conf.channelId;
+        this.silentBuffer = conf.silentBuffer;
+        this.lastCallTimePropName = 'TG_BOT_LAST_CALL_TIME';
     }
 
-    return timestamp;
-}
+    /**
+     * @param {string} msg
+     */
+    sendMessage(msg) {
+        let url = this.getSendMessageUrl();
 
-function tgBotSetLastCallTime(timestamp) {
-    if (timestamp === undefined) {
-        timestamp = Date.now() / 1000;
+        let data = {
+            'chat_id': this.channelId,
+            'text': msg,
+            'disable_notification': this.getTimeAfterLastCall() < this.silentBuffer,
+            'parse_mode': 'HTML'
+        };
+
+        let options = {
+            'method': 'post',
+            'contentType': 'application/json',
+            'payload': JSON.stringify(data)
+        };
+
+        UrlFetchApp.fetch(url, options);
+        this.setLastCallTime();
     }
 
-    var scriptProperties = PropertiesService.getScriptProperties();
-    scriptProperties.setProperty('TG_BOT_LAST_CALL_TIME', timestamp);
+    /**
+     * @return {string}
+     */
+    getBaseUrl() {
+        return 'https://api.telegram.org/bot' + this.token;
+    }
+
+    /**
+     * @return {string}
+     */
+    getSendMessageUrl() {
+        return this.getBaseUrl() + '/sendMessage';
+    }
+
+    /**
+     * @return {number}
+     */
+    getLastCallTime() {
+        let scriptProperties = PropertiesService.getScriptProperties();
+        let timestamp = scriptProperties.getProperty(this.lastCallTimePropName);
+
+        if (timestamp === undefined) {
+            return 0;
+        }
+
+        return parseInt(timestamp);
+    }
+
+    /**
+     * @return {number}
+     */
+    getTimeAfterLastCall() {
+        return Date.now() / 1000 - this.getLastCallTime();
+    }
+
+    /**
+     * @param {number?} timestamp (unix time)
+     */
+    setLastCallTime(timestamp) {
+        if (timestamp === undefined) {
+            timestamp = Date.now() / 1000;
+        }
+
+        let scriptProperties = PropertiesService.getScriptProperties();
+        scriptProperties.setProperty(this.lastCallTimePropName, timestamp.toString());
+    }
 }
