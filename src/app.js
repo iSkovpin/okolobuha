@@ -127,6 +127,15 @@ function payDebt() {
     ui.alert(resultMsg);
 }
 
+function notifyAboutRent() {
+    if (!config.get('telegramNotifications')) {
+        return;
+    }
+
+    let tgBot = new TelegramBot();
+    tgBot.sendMessage('Сегодня день арендной платы! 👻');
+}
+
 /**
  * @param {GoogleAppsScript.Events.SheetsOnEdit} e
  */
