@@ -4,7 +4,7 @@ class TelegramBot {
         this.token = conf.token;
         this.channelId = conf.channelId;
         this.silentBuffer = conf.silentBuffer;
-        this.lastCallTimePropName = 'TG_BOT_LAST_CALL_TIME';
+        this.lastCallTimePropName = conf.lastCallTimePropName;
     }
 
     /**
