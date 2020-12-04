@@ -1,11 +1,3 @@
-/**
- * @param {GoogleAppsScript.Events.SheetsOnEdit} e
- */
-function logEvent(e) {
-    let eventHandler = new EventHandler(new ExpensesSheetInfo(), new LogMessageBuilder(), new TelegramBot(), Logger);
-    eventHandler.handle(e);
-}
-
 class LogMessageBuilder {
     /**
      * @param {ExpenseRecord} expenseRecord

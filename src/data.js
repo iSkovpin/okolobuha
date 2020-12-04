@@ -1,32 +1,4 @@
 /**
- * Add new expense record
- */
-function addRecord() {
-    let sheetInfo = new ExpensesSheetInfo();
-    let sheet = sheetInfo.getSheet();
-
-    let srcRowNum = sheetInfo.sampleDataRow;
-    let destRowNum = sheetInfo.firstDataRow;
-    sheet.insertRowBefore(destRowNum);
-
-    let firstColumn = sheetInfo.getFirstConfigurableColumn();
-    let lastColumn = sheetInfo.getLastConfigurableColumn();
-    let columnsNumber = lastColumn - firstColumn + 1;
-
-    let srcRow = sheet.getRange(srcRowNum, firstColumn, 1, columnsNumber);
-    let destRow = sheet.getRange(destRowNum, firstColumn, 1, columnsNumber);
-
-    srcRow.copyTo(destRow);
-
-    let record = new ExpenseRecord(destRowNum, sheetInfo);
-    let date = Utilities.formatDate(new Date(), config.get('timezone'), config.get('dateFormat'));
-    record.setDate(date);
-    record.setSum('');
-    record.sumCell.activate();
-}
-
-
-/**
  * Common record class. Only for extending.
  */
 class Record {
@@ -125,7 +97,6 @@ class DebtRecord extends Record {
 }
 
 class ExpenseRecord extends Record {
-
     /**
      * @param {number} row
      * @param {ExpensesSheetInfo} sheetInfo
