@@ -1,6 +1,7 @@
 const configExample = {
     timezone: 'GMT+7',
     dateFormat: 'dd.MM.yyyy',
+    telegramNotifications: true,
     telegramBot: {
         token: '<token>',
         channelId: -123456789,

@@ -102,7 +102,9 @@ class EventHandler {
 
         let msg = this.msgBuilder.getDebtPaymentMsg(record, debtRecord);
         this.logger.log(msg);
-        this.tgBot.sendMessage(msg);
+        if (config.get('telegramNotifications')) {
+            this.tgBot.sendMessage(msg);
+        }
         return true;
     }
 
@@ -116,7 +118,9 @@ class EventHandler {
         let record = new ExpenseRecord(e.range.getRow(), this.expensesSheetInfo);
         let msg = this.msgBuilder.getNewRecordMsg(record);
         this.logger.log(msg);
-        this.tgBot.sendMessage(msg);
+        if (config.get('telegramNotifications')) {
+            this.tgBot.sendMessage(msg);
+        }
         return true;
     }
 }
