@@ -2,7 +2,7 @@
 
 # Okolobuha
 
-An [Apps Script](https://developers.google.com/apps-script/) for home accounting.
+An [Google Apps Script](https://developers.google.com/apps-script/) for home accounting.
 
 Works with Google Sheets and notifies about new changes using telegram bot.
 
