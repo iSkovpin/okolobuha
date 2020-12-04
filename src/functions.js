@@ -52,8 +52,8 @@ function getObjectMinRecursive (object) {
 
 /**
  * @param {GoogleAppsScript.Spreadsheet.Range} range
- * @param {GoogleAppsScript.Spreadsheet.Spreadsheet} ss
- * @param {GoogleAppsScript.Spreadsheet.Sheet} sheet
+ * @param {GoogleAppsScript.Spreadsheet.Spreadsheet?} ss
+ * @param {GoogleAppsScript.Spreadsheet.Sheet?} sheet
  * @return {string}
  */
 function getCellUrl(range, ss, sheet) {

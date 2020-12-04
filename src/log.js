@@ -2,60 +2,101 @@
  * @param {GoogleAppsScript.Events.SheetsOnEdit} e
  */
 function logEvent(e) {
-    logPayment(e);
-    logNewRecord(e);
+    let eventHandler = new EventHandler(new ExpensesSheetInfo(), new LogMessageBuilder(), new TelegramBot(), Logger);
+    eventHandler.handle(e);
 }
 
-/**
- * @param {GoogleAppsScript.Events.SheetsOnEdit} e
- */
-function logNewRecord(e) {
-    let range = e.range;
-    let sheetInfo = new ExpensesSheetInfo();
+class LogMessageBuilder {
+    /**
+     * @param {ExpenseRecord} expenseRecord
+     * @return {string}
+     */
+    getNewRecordMsg(expenseRecord) {
+        let payer = expenseRecord.getPayer();
+        if (!payer) {
+            payer = dict.getNoun('кто-то', NounCase.IM);
+        }
 
-    if (!sheetInfo.isInfoCell(range) || e.oldValue !== undefined) {
-        return;
+        let infoLink = this.getExpenseRecordInfoLink(expenseRecord);
+        let msg = payer + " " + dict.getVerb('добавить', dict.getNounGender(payer)) + " новую запись: " + expenseRecord.getSum().toFixed(2) + " руб. за " + infoLink;
+        return msg.capitalize();
     }
 
-    let record = new ExpenseRecord(range.getRow(), sheetInfo);
-    let payer = record.getPayer();
-
-    if (!payer) {
-        payer = dict.getNoun('кто-то', NounCase.IM);
+    /**
+     * @param {ExpenseRecord} expenseRecord
+     * @param {DebtRecord} debtRecord
+     * @return {string}
+     */
+    getDebtPaymentMsg(expenseRecord, debtRecord) {
+        let infoLink = this.getExpenseRecordInfoLink(expenseRecord);
+        let msg = debtRecord.getName() + " " + dict.getVerb('заплатить', dict.getNounGender(debtRecord.getName())) + " " + debtRecord.getSum().toFixed(2) + " руб. " + dict.getNoun(expenseRecord.getPayer(), NounCase.DAT) + " за " + infoLink;
+        return msg.capitalize();
     }
 
-    let infoLink = '<a href="' + getCellUrl(range, e.source, e.source.getActiveSheet()) + '">' + record.getInfo() + '</a>';
-    let msg = payer + " " + dict.getVerb('добавить', dict.getNounGender(payer)) + " новую запись: " + record.getSum().toFixed(2) + " руб. за " + infoLink;
-    msg = msg.capitalize();
-
-    Logger.log(msg);
-    let tgBot = new TelegramBot();
-    tgBot.sendMessage(msg);
+    /**
+     * @param {ExpenseRecord} expenseRecord
+     * @return {string}
+     */
+    getExpenseRecordInfoLink(expenseRecord) {
+        return '<a href="' + getCellUrl(expenseRecord.infoCell) + '">' + expenseRecord.getInfo() + '</a>';
+    }
 }
 
-/**
- * @param {GoogleAppsScript.Events.SheetsOnEdit} e
- */
-function logPayment(e) {
-    let range = e.range;
-    let sheetInfo = new ExpensesSheetInfo();
-    if (!sheetInfo.isCheckDebtCell(range)) {
-        return;
+class EventHandler {
+    /**
+     * @param {ExpensesSheetInfo} expensesSheetInfo
+     * @param {LogMessageBuilder} msgBuilder
+     * @param {TelegramBot} tgBot
+     * @param {GoogleAppsScript.Base.Logger} logger
+     */
+    constructor(expensesSheetInfo, msgBuilder, tgBot, logger) {
+        this.logger = logger;
+        this.msgBuilder = msgBuilder;
+        this.expensesSheetInfo = expensesSheetInfo;
+        this.tgBot = tgBot;
     }
 
-    let record = new ExpenseRecord(range.getRow(), sheetInfo);
-    let debtor = sheetInfo.getDebtorNameByCell(range);
-    let debtRecord = record.getDebtRecordByName(debtor);
-
-    if (!debtRecord.getCheck() || !debtRecord.getSum() || record.getPayer() === debtRecord.getName()) {
-        return;
+    /**
+     * @param {GoogleAppsScript.Events.SheetsOnEdit} e
+     */
+    handle(e) {
+        if (this.handleNewRecordEvent(e)) return;
+        if (this.handleDebtPaymentEvent(e)) return;
     }
 
-    let infoLink = '<a href="' + getCellUrl(record.infoCell, e.source, e.source.getActiveSheet()) + '">' + record.getInfo() + '</a>';
-    let msg = debtRecord.getName() + " " + dict.getVerb('заплатить', dict.getNounGender(debtRecord.getName())) + " " + debtRecord.getSum().toFixed(2) + " руб. " + dict.getNoun(record.getPayer(), NounCase.DAT) + " за " + infoLink;
-    msg = msg.capitalize();
+    /**
+     * @param {GoogleAppsScript.Events.SheetsOnEdit} e
+     */
+    handleDebtPaymentEvent(e) {
+        if (!this.expensesSheetInfo.isCheckDebtCell(e.range)) {
+            return false;
+        }
 
-    Logger.log(msg);
-    let tgBot = new TelegramBot();
-    tgBot.sendMessage(msg);
+        let record = new ExpenseRecord(e.range.getRow(), this.expensesSheetInfo);
+        let debtor = this.expensesSheetInfo.getDebtorNameByCell(e.range);
+        let debtRecord = record.getDebtRecordByName(debtor);
+
+        if (!debtRecord.getCheck() || !debtRecord.getSum() || record.getPayer() === debtRecord.getName()) {
+            return false;
+        }
+
+        let msg = this.msgBuilder.getDebtPaymentMsg(record, debtRecord);
+        this.logger.log(msg);
+        this.tgBot.sendMessage(msg);
+        return true;
+    }
+
+    /**
+     * @param {GoogleAppsScript.Events.SheetsOnEdit} e
+     */
+    handleNewRecordEvent(e) {
+        if (!(this.expensesSheetInfo.isInfoCell(e.range) && e.oldValue === undefined)) {
+            return false;
+        }
+        let record = new ExpenseRecord(e.range.getRow(), this.expensesSheetInfo);
+        let msg = this.msgBuilder.getNewRecordMsg(record);
+        this.logger.log(msg);
+        this.tgBot.sendMessage(msg);
+        return true;
+    }
 }
