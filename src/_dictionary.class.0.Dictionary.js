@@ -1,19 +1,3 @@
-const VerbCase = {
-    SIMPLE: 's',
-    MALE: 'm',
-    FEMALE: 'f',
-    MIDDLE: 'md'
-};
-
-const NounCase = {
-    IM: 'i',
-    ROD: 'r',
-    DAT: 'd',
-    VIN: 'v',
-    TV: 't',
-    PRED: 'p'
-}
-
 class Dictionary {
     constructor() {
         this.nouns = {};
@@ -83,41 +67,3 @@ class Dictionary {
         return this.nouns[noun].gender;
     }
 }
-
-class Noun {
-    /**
-     * @param i {string}
-     * @param r {string}
-     * @param d {string}
-     * @param v {string}
-     * @param t {string}
-     * @param p {string}
-     * @param gender {string}
-     */
-    constructor(i, r, d, v, t, p, gender) {
-        this[NounCase.IM] = i;
-        this[NounCase.ROD] = r;
-        this[NounCase.DAT] = d;
-        this[NounCase.VIN] = v;
-        this[NounCase.TV] = t;
-        this[NounCase.PRED] = p;
-        this.gender = gender
-    }
-}
-
-class Verb {
-    /**
-     * @param s {string}
-     * @param m {string}
-     * @param f {string}
-     * @param md {string}
-     */
-    constructor(s, m, f, md) {
-        this[VerbCase.SIMPLE] = s;
-        this[VerbCase.MALE] = m;
-        this[VerbCase.FEMALE] = f;
-        this[VerbCase.MIDDLE] = md;
-    }
-}
-
-
