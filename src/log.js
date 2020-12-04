@@ -34,6 +34,26 @@ class LogMessageBuilder {
     }
 
     /**
+     * @param {string} debtorName
+     * @param {string} payerName
+     * @param {number} debtSum
+     * @param {string[]} debtMessages
+     * @param {string[]} recalcMessages
+     * @return {string}
+     */
+    getAllDebtsPayment(debtorName, payerName, debtSum, debtMessages, recalcMessages) {
+        let resultMsg = "Долг " + dict.getNoun(debtorName, NounCase.ROD) + ' ' + dict.getNoun(payerName, NounCase.DAT) + " в размере " + debtSum.toFixed(2) + " руб. погашен с учётом взаимного перерасчёта.\n\nПозиции:\n";
+        debtMessages.forEach(msg => resultMsg += msg + "\n");
+
+        if (recalcMessages.length > 0) {
+            resultMsg += "\nПерерасчёт:\n"
+            recalcMessages.forEach(msg => resultMsg += msg + "\n");
+        }
+
+        return resultMsg;
+    }
+
+    /**
      * @param {ExpenseRecord} expenseRecord
      * @return {string}
      */
