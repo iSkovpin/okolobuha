@@ -52,19 +52,10 @@ function getObjectMinRecursive (object) {
 
 /**
  * @param {GoogleAppsScript.Spreadsheet.Range} range
- * @param {GoogleAppsScript.Spreadsheet.Spreadsheet?} ss
- * @param {GoogleAppsScript.Spreadsheet.Sheet?} sheet
  * @return {string}
  */
-function getCellUrl(range, ss, sheet) {
-    if (ss === undefined) {
-        ss = SpreadsheetApp.getActiveSpreadsheet();
-    }
-    if (sheet === undefined) {
-        sheet = ss.getActiveSheet();
-    }
-
-    return ss.getUrl() + '#gid=' + sheet.getSheetId() + "&range=" + range.getA1Notation();
+function getCellUrl(range) {
+    return range.getSheet().getParent().getUrl() + '#gid=' + range.getSheet().getSheetId() + "&range=" + range.getA1Notation();
 }
 
 /**
@@ -72,4 +63,11 @@ function getCellUrl(range, ss, sheet) {
  */
 String.prototype.capitalize = function () {
     return this.charAt(0).toUpperCase() + this.slice(1);
+}
+
+/**
+ * @return {string}
+ */
+String.prototype.stripTags = function () {
+    return this.replace(/<\/?[^>]+(>|$)/g, "");
 }
