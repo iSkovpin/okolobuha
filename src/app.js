@@ -75,6 +75,7 @@ function payDebt() {
     }
 
     let expensesSheetInfo = new ExpensesSheetInfo();
+    let msgBuilder = new LogMessageBuilder();
     let row = expensesSheetInfo.firstDataRow - 1;
     let debtMessages = [];
     let recalcMessages = [];
@@ -100,7 +101,7 @@ function payDebt() {
 
             debtRecord.setCheck(true);
             debtRestSum -= debtRecord.getSum();
-            debtMessages.push('[' + debtRecord.getSum().toFixed(2) + ' руб.] ' + record.getInfo());
+            debtMessages.push('[' + debtRecord.getSum().toFixed(2) + ' руб.] ' + msgBuilder.getExpenseRecordInfoLink(record));
         } else if (isPayerToDebtorRecord) {
             let debtRecord = record.getDebtRecordByName(payer);
             if (debtRecord.getCheck() === true) {
@@ -109,21 +110,20 @@ function payDebt() {
 
             debtRecord.setCheck(true);
             debtRestSum += debtRecord.getSum();
-            recalcMessages.push('[-' + debtRecord.getSum().toFixed(2) + ' руб.] ' + record.getInfo());
+            recalcMessages.push('[-' + debtRecord.getSum().toFixed(2) + ' руб.] ' + msgBuilder.getExpenseRecordInfoLink(record));
         }
     }
 
-    let msgBuilder = new LogMessageBuilder();
     let resultMsg = msgBuilder.getAllDebtsPayment(debtor, payer, debtSum, debtMessages, recalcMessages);
-
-    Logger.log(resultMsg);
-    Logger.log('Rows processed: ' + (row - expensesSheetInfo.firstDataRow + 1));
 
     if (config.get('telegramNotifications')) {
         let tgBot = new TelegramBot();
         tgBot.sendMessage(resultMsg);
     }
 
+    resultMsg = resultMsg.stripTags();
+    Logger.log(resultMsg);
+    Logger.log('Rows processed: ' + (row - expensesSheetInfo.firstDataRow + 1));
     ui.alert(resultMsg);
 }
 
