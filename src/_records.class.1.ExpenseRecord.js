@@ -110,4 +110,20 @@ class ExpenseRecord extends DataRecord {
         this.infoCell.setValue(value);
         return this;
     }
+
+    /**
+     * @return {boolean}
+     */
+    isValid() {
+        return Boolean(this.getSum()) && Boolean(this.getPayer());
+    }
+
+    normalize() {
+        for (let debtorName in this.debtRecords) {
+            let debtRecord = this.debtRecords[debtorName];
+            if ((debtRecord.getSum() === 0.0 && debtRecord.getCheck() === false) || debtRecord.getName() === this.getPayer()) {
+                debtRecord.setCheck(true);
+            }
+        }
+    }
 }
