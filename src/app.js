@@ -138,7 +138,7 @@ function notifyAboutRent() {
 
 function normalizeExpenseRecords() {
     let sheetInfo = new ExpensesSheetInfo();
-    let row = sheetInfo.config.rows.firstData;
+    let row = sheetInfo.firstDataRow;
     while (true) {
         let record = new ExpenseRecord(row, sheetInfo);
         if (!record.isValid()) {
