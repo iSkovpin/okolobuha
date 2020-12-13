@@ -119,11 +119,10 @@ class ExpenseRecord extends DataRecord {
     }
 
     normalize() {
-        for (let debtorName in this.debtRecords) {
-            let debtRecord = this.debtRecords[debtorName];
-            if ((debtRecord.getSum() === 0.0 && debtRecord.getCheck() === false) || debtRecord.getName() === this.getPayer()) {
+        Object.values(this.debtRecords).forEach(debtRecord => {
+            if ((debtRecord.getSum() === 0.0 || debtRecord.getName() === this.getPayer()) && debtRecord.getCheck() === false) {
                 debtRecord.setCheck(true);
             }
-        }
+        })
     }
 }
