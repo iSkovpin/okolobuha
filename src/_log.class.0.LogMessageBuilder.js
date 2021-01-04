@@ -1,16 +1,23 @@
 class LogMessageBuilder {
     /**
+     * @param {Dictionary} dict
+     */
+    constructor(dict) {
+        this.dict = dict;
+    }
+
+    /**
      * @param {ExpenseRecord} expenseRecord
      * @return {string}
      */
     getNewRecordMsg(expenseRecord) {
         let payer = expenseRecord.getPayer();
         if (!payer) {
-            payer = dict.getNoun('кто-то', NounCase.IM);
+            payer = this.dict.getNoun('кто-то', NounCase.IM);
         }
 
         let infoLink = this.getExpenseRecordInfoLink(expenseRecord);
-        let msg = payer + " " + dict.getVerb('добавить', dict.getNounGender(payer)) + " новую запись: " + expenseRecord.getSum().toFixed(2) + " руб. за " + infoLink;
+        let msg = payer + " " + this.dict.getVerb('добавить', this.dict.getNounGender(payer)) + " новую запись: " + expenseRecord.getSum().toFixed(2) + " руб. за " + infoLink;
         return msg.capitalize();
     }
 
@@ -21,7 +28,7 @@ class LogMessageBuilder {
      */
     getDebtPaymentMsg(expenseRecord, debtRecord) {
         let infoLink = this.getExpenseRecordInfoLink(expenseRecord);
-        let msg = debtRecord.getName() + " " + dict.getVerb('заплатить', dict.getNounGender(debtRecord.getName())) + " " + debtRecord.getSum().toFixed(2) + " руб. " + dict.getNoun(expenseRecord.getPayer(), NounCase.DAT) + " за " + infoLink;
+        let msg = debtRecord.getName() + " " + this.dict.getVerb('заплатить', this.dict.getNounGender(debtRecord.getName())) + " " + debtRecord.getSum().toFixed(2) + " руб. " + this.dict.getNoun(expenseRecord.getPayer(), NounCase.DAT) + " за " + infoLink;
         return msg.capitalize();
     }
 
@@ -34,7 +41,7 @@ class LogMessageBuilder {
      * @return {string}
      */
     getAllDebtsPayment(debtorName, payerName, debtSum, debtMessages, recalcMessages) {
-        let resultMsg = "Долг " + dict.getNoun(debtorName, NounCase.ROD) + ' ' + dict.getNoun(payerName, NounCase.DAT) + " в размере " + debtSum.toFixed(2) + " руб. погашен с учётом взаимного перерасчёта.\n\nПозиции:\n";
+        let resultMsg = "Долг " + this.dict.getNoun(debtorName, NounCase.ROD) + ' ' + this.dict.getNoun(payerName, NounCase.DAT) + " в размере " + debtSum.toFixed(2) + " руб. погашен с учётом взаимного перерасчёта.\n\nПозиции:\n";
         debtMessages.forEach(msg => resultMsg += msg + "\n");
 
         if (recalcMessages.length > 0) {
