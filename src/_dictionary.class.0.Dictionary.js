@@ -1,5 +1,30 @@
 class Dictionary {
-    constructor() {
+    /**
+     * @param {Object} initContent
+     */
+    constructor(initContent) {
+        this.init(initContent);
+    }
+
+    /**
+     * @param {Object} initContent
+     */
+    init(initContent) {
+        this.clear();
+
+        if (initContent.verbs.length > 0) {
+            initContent.verbs.forEach(verb => this.addVerb(new Verb(...verb)));
+        }
+
+        if (initContent.nouns.length > 0) {
+            initContent.nouns.forEach(noun => this.addNoun(new Noun(...noun)));
+        }
+    }
+
+    /**
+     * Clear all content.
+     */
+    clear() {
         this.nouns = {};
         this.verbs = {};
     }
