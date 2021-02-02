@@ -6,8 +6,17 @@ function payDebt() {
     okolobuha.payDebt();
 }
 
-function notifyAboutRent() {
-    okolobuha.sendTelegramNotification('Сегодня день арендной платы! 👻');
+function sendNotifications() {
+    let today = new Date();
+    let lastDayOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+
+    if (today.getDate() === 25) {
+        okolobuha.sendTelegramNotification('Сегодня день арендной платы! 👻');
+    }
+
+    if (today.getDate() === lastDayOfMonth.getDate()) {
+        okolobuha.sendTelegramNotification('Пришло время сверить счётчики! 🎰');
+    }
 }
 
 function normalizeExpenseRecords() {
